@@ -1,0 +1,101 @@
+\documentclass[10pt]{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[left=1.25in,right=1.25in]{geometry}
+
+\renewcommand{\baselinestretch}{1.5}
+
+\theoremstyle{definition}
+\newtheorem{exmp}{Example}
+
+\begin{document}
+
+\section*{Bregman Divergences}
+
+Given a strictly convex, differentiable function $f:\mathcal{X}\rightarrow \mathbb{R}$ in the compact space $\mathcal{X} \subseteq \mathbb{R}^n$, the \emph{Bregman divergence} between two points $\mathbf{x}_1$ and $\mathbf{x}_2$ in the space of $\mathcal{X}$ is defined to be
+
+\begin{equation}
+D_f(\mathbf{x}_1\lVert\mathbf{x}_2) = f(\mathbf{x}_1) - f(\mathbf{x}_2) - \langle\nabla f(\mathbf{x}_2), \mathbf{x}_1 - \mathbf{x}_2\rangle, \quad{} \forall \mathbf{x}_1,\mathbf{x}_2 \in \mathcal{X}
+\end{equation}
+
+\noindent
+That is, the Bregman divergence of a function $f$ between two points $\mathbf{x}_1$ and $\mathbf{x}_2$ is the difference of the value of $f$ at $\mathbf{x}_1$ and the value of the first-order Taylor expansion of $f$ around $\mathbf{x}_2$ evaluated at $\mathbf{x}_1$.
+
+\begin{exmp}
+
+\noindent
+For the Euclidean distance function, 
+$$
+f(\mathbf{x}) = \frac{1}{2} \lVert \mathbf{x} \rVert ^2
+$$
+$$
+\nabla f(\mathbf{x}) = \mathbf{x}
+$$
+The Bregman divergence between any two points in the space of this function can be derived as follows:
+\begin{equation}
+\begin{aligned}
+D_f(\mathbf{x}\lVert\mathbf{y}) & = \frac{1}{2} \lVert \mathbf{x} \rVert ^2 - \frac{1}{2} \lVert \mathbf{y} \rVert ^2 - \langle \mathbf{y}, \mathbf{x} - \mathbf{y} \rangle \\
+& = \frac{1}{2}\left( \sqrt{\sum_i x_i^2} \right)^2 - \frac{1}{2}\left( \sqrt{\sum_i y_i^2} \right)^2
+- \sum_i x_i y_i + \sum_i y_i^2 \\
+& = \frac{1}{2}\sum_i x_i^2 - \frac{1}{2}\sum_i y_i^2 - \sum_i x_i y_i + \sum_i y_i^2 \\
+& = \frac{1}{2}\sum_i x_i^2 - \sum_i x_i y_i + \frac{1}{2}\sum_i y_i^2 \\
+& = \frac{1}{2}\sum_i (x_i^2 - 2 x_i y_i + y_i^2) \\
+& = \frac{1}{2}\sum_i (x_i - y_i)^2 \\
+\therefore D_f(\mathbf{x}\lVert\mathbf{y}) & = \frac{1}{2} \lVert \mathbf{x} - \mathbf{y} \rVert^2
+\end{aligned}
+\end{equation}
+
+\end{exmp}
+
+\subsection*{Conjugate Functions}
+
+Given a function $f:\mathcal{X} \rightarrow \mathbb{R}$ where $\mathcal{X} \subseteq \mathbb{R}^n$, the convex conjugate function $f^*$ is defined as
+\begin{equation}
+f^*(\mathbf{y}) = \sup_{\mathbf{x}} \left[\mathbf{y}^\top \mathbf{x} - f(\mathbf{x})\right]
+\end{equation}
+\noindent
+If the function $f$ is differentiable and convex, then $\sup_{\mathbf{x}}\left[\mathbf{y}^\top \mathbf{x} - f(\mathbf{x})\right]$ can be easily calculated by taking the derivative w.r.t. $\mathbf{x}$ to get
+
+\begin{equation}
+\begin{aligned}
+\frac{d}{d\mathbf{x}} \left(\mathbf{y}^\top \mathbf{x} - f(\mathbf{x})\right) & = 0 \\
+\Rightarrow \mathbf{y} & = \nabla f(\mathbf{x})
+\end{aligned}
+\end{equation}
+
+\subsection*{Conjugate Duality Relationship}
+
+Given a function $f:\mathcal{X} \rightarrow \mathbb{R}$ where $\mathcal{X} \subseteq \mathbb{R}^n$ and its convex conjugate $f^* = \sup_{\mathbf{x}} \left[\mathbf{y}^\top \mathbf{x} - f(\mathbf{x})\right]$, we can define the following
+
+$$
+\mathbf{y}_1 = \nabla f(\mathbf{x}_1)
+$$
+$$
+\mathbf{y}_2 = \nabla f(\mathbf{x}_2)
+$$
+$$
+\mathbf{x}_1 = \nabla f^*(\mathbf{y}_1)
+$$
+$$
+\mathbf{x}_2 = \nabla f^*(\mathbf{y}_2)
+$$
+
+\noindent
+We can then show that measuring the divergence in both spaces are equivalent:
+
+\begin{equation}
+\begin{aligned}
+D_f(\mathbf{x}_1\lVert\mathbf{x}_2) & = f(\mathbf{x}_1) - f(\mathbf{x}_2) - \langle\nabla f(\mathbf{x}_2), \mathbf{x}_1 - \mathbf{x}_2\rangle \\
+& = f(\mathbf{x}_1) - f(\mathbf{x}_2) - (\mathbf{x}_1 - \mathbf{x}_2)^\top\mathbf{y}_2 \\
+& = f(\mathbf{x}_1) - f(\mathbf{x}_2) - (\mathbf{x}_1 - \mathbf{x}_2)^\top\mathbf{y}_2 + \mathbf{x}_1^\top\mathbf{y}_1 - \mathbf{x}_1^\top\mathbf{y}_1 \\
+& = f(\mathbf{x}_1) - f(\mathbf{x}_2) - \mathbf{x}_1^\top\mathbf{y}_2 + \mathbf{x}_2^\top\mathbf{y}_2 + \mathbf{x}_1^\top\mathbf{y}_1 - \mathbf{x}_1^\top\mathbf{y}_1 \\
+& = -[\mathbf{x}_1^\top\mathbf{y}_1 - f(\mathbf{x}_1)] + [\mathbf{x}_2^\top\mathbf{y}_2 - f(\mathbf{x}_2)] - \mathbf{x}_1^\top\mathbf{y}_2 + \mathbf{x}_1^\top\mathbf{y}_1 \\
+& = -f^*(\mathbf{y}_1) + f^*(\mathbf{y}_2) - (\mathbf{y}_2 - \mathbf{y}_1)^\top\mathbf{x}_1 \\
+& = f^*(\mathbf{y}_2) - f^*(\mathbf{y}_1) - \langle \nabla f^*(\mathbf{y}_1), \mathbf{y}_2 - \mathbf{y}_1 \rangle \\
+& = D_{f^*}(\mathbf{y}_2\lVert\mathbf{y}_1)
+\end{aligned}
+\end{equation}
+
+\end{document}
