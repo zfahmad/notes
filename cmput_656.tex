@@ -6,6 +6,7 @@
 \usepackage[left=1.25in,right=1.25in]{geometry}
 
 \renewcommand{\baselinestretch}{1.5}
+\newcommand{\indmax}{\operatorname{ind\,max}}
 
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}
@@ -33,6 +34,7 @@ $$
 $$
 \nabla f(\mathbf{x}) = \mathbf{x}
 $$
+
 The Bregman divergence between any two points in the space of this function can be derived as follows:
 \begin{equation}
 \begin{aligned}
@@ -97,5 +99,151 @@ D_f(\mathbf{x}_1\lVert\mathbf{x}_2) & = f(\mathbf{x}_1) - f(\mathbf{x}_2) - \lan
 & = D_{f^*}(\mathbf{y}_2\lVert\mathbf{y}_1)
 \end{aligned}
 \end{equation}
+
+\section*{KL-Divergence}
+$$
+f_\tau(\mathbf{q}) = \ln{\mathbf{1}^\top e^{\mathbf{q}/\tau}}
+$$
+$$
+\nabla f_\tau(\mathbf{q}) = \frac{e^{\mathbf{q}/\tau}}{\mathbf{1}^\top e^{\mathbf{q}/\tau}}
+$$
+$$
+\mathcal{F} = \{\mathbf{q}: \mathbf{q}_0=0\}
+$$
+$$
+f^*_\tau(\mathbf{p}) = \tau \mathbf{p}^\top\ln{\mathbf{p}}
+$$
+$$
+\nabla f^*_\tau(\mathbf{p}) = \tau (\ln{\mathbf{p}} - \ln{\mathbf{p}_0})
+$$
+$$
+\mathcal{F}^* = \{\mathbf{p}:\mathbf{p}\geq0, \mathbf{1}^\top \mathbf{p} = 1\}
+$$
+
+\section*{Jacobian of $\mathbf{p}$ w.r.t. $\mathbf{q}$}
+\noindent
+Suppose we are given the softmax function $\nabla f$ where
+$$
+\mathbf{p} = \nabla f(\mathbf{q}) = \frac{e^\mathbf{q}}{\sum_i e^{\mathbf{q}_i}}
+$$
+
+\noindent
+Taking partial derivates with respect to the components of $\mathbf{q}$ gives us
+
+$$
+\frac{\partial p_i}{\partial q_j} = \frac{\partial}{\partial q_j} \left(\frac{e^{q_i}}{\sum_j e^{q_j}} \right) = \frac{\partial}{\partial q_j} \left(\frac{-e^{q_i}e^{q_j}}{\sum_j e^{q_j}} \right), \quad \text{when $i\neq j$}
+$$
+
+\noindent
+and
+
+$$
+\frac{\partial p_i}{\partial q_j} = \frac{\partial}{\partial q_j} \left(\frac{e^{q_i}}{\sum_j e^{q_j}} \right) = \frac{\partial}{\partial q_j} \left(\frac{e^{q_i}(\sum_j e^{q_j})-e^{q_i}e^{q_j}}{\sum_j e^{q_j}} \right), \quad \text{when $i=j$}
+$$
+
+\noindent
+Combining both equations, we get the matrix equation
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathbf{p}}{d\mathbf{q}} & = \Delta(\nabla f(\mathbf{q})) - \nabla f(\mathbf{q})\nabla f(\mathbf{q})^\top, \\
+& = \Delta(\mathbf{p}) - \mathbf{p}\mathbf{p}^\top
+\end{aligned}
+\end{equation*}
+
+\section*{Policy Gradient Method}
+
+In reinforcement learning, one method for find the optimal action (or optimal sequence of actions) is to use \emph{policy gradient methods}. These methods approximate a policy using the rewards and value function approximation. The objective of policy gradient methods is to find the policy with the best performance
+
+$$
+\max_{\pi} \pi \cdot r
+$$
+
+\noindent
+where $\pi$ is a policy. This objective can be rewritten as
+$$
+V = \mathbf{p} \cdot \mathbf{r}
+$$
+$$
+\mathbf{p} = \nabla f(\mathbf{q})
+$$
+
+\noindent
+where $\mathbf{q}$ is a vector of values produced from some value function approximator (i.e., a neural network) parameterized by a weight vector $\pmb{\theta}$ so that $\nabla f(\mathbf{q}) = \nabla f(\mathbf{q}(\pmb{\theta}))$. Finding the maximum policy would require taking the derivative of $V$ with respect to the parameters for $\mathbf{q}$ (which also parameterize $\mathbf{p}$) to get
+
+\begin{equation*}
+\begin{aligned}
+\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot \frac{d\mathbf{p}}{d\mathbf{q}} \cdot \frac{dV}{d\mathbf{p}} \\
+& = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot (\Delta(\mathbf{p}) - \mathbf{p}\mathbf{p}^\top) \cdot \mathbf{r}
+\end{aligned}
+\end{equation*}
+
+\noindent
+Depending on the direction in which we pull out $\Delta(\mathbf{p}$ from the middle term, we can derive two resultant forms. The first form, called ``Bregman'', being
+
+\begin{equation*}
+\begin{aligned}
+\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot \Delta(\mathbf{p}) (I - \mathbf{1}\mathbf{p}^\top) \cdot \mathbf{r} \\
+& = \sum_a p_a \left[\frac{d\mathbf{q}}{d\pmb{\theta}}\right]_{:a}(r_a - \mathbf{p}^\top \mathbf{r})
+\end{aligned}
+\end{equation*}
+
+\noindent 
+The second form is called ``Williams'' and is of the form
+
+\begin{equation*}
+\begin{aligned}
+\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot (I - \mathbf{1}\mathbf{p}^\top) \Delta(\mathbf{p}) \cdot \mathbf{r} \\
+& = \sum_a p_a \left[\frac{d\mathbf{q}}{d\pmb{\theta}}(I - \mathbf{p}\mathbf{1}^\top)\right]_{:a}r_a
+\end{aligned}
+\end{equation*}
+
+\noindent
+With the KL-divergence we know that
+
+\begin{equation*}
+\begin{aligned}
+\nabla f(\mathbf{q}) & = \frac{e^{\mathbf{q}}}{\mathbf{1}^\top e^{\mathbf{q}}} \\
+\mathbf{p} & = \frac{e^{\mathbf{q}}}{\mathbf{1}^\top e^{\mathbf{q}}} \\
+\Rightarrow \ln\mathbf{p} & = \ln\left(\frac{e^{\mathbf{q}}}{\mathbf{1}^\top e^{\mathbf{q}}}\right) \\
+& = \ln e^{\mathbf{q}} - \ln\mathbf{1}^\top e^{\mathbf{q}} \\
+& = \mathbf{q} - \mathbf{1}f(\mathbf{q}) \\
+\therefore \frac{d\log\mathbf{p}}{d\mathbf{q}} & = \mathbf{I} - \nabla f(\mathbf{q})\mathbf{1}^\top = \mathbf{I} - \mathbf{p}\mathbf{1}^\top 
+\end{aligned}
+\end{equation*}
+
+\noindent
+As a result, Williams can be rewritten as
+
+$$
+\sum_a p_a \frac{d\mathbf{q}}{d\pmb{\theta}}\left[\frac{d\log\mathbf{p}}{d\mathbf{q}}\right]_{:a}(r_a - c)
+$$
+
+\section*{Bregman Losses for Bandits}
+
+Suppose we have a vector of actions $\mathbf{a} = \langle a_1, a_2, \hdots, a_n\rangle$, where each action $a_i$ is associated with a real-valued reward $r_i = q_i$ and $\mathbf{q}$ is the vector of rewards $\langle q_1, q_2, \hdots, q_n\rangle$. Our objective is to estimate a selection policy $\mathbf{\hat{p}}$ that selects the optimal action (the action that achieves the highest expected reward.) In our case, the policy over actions is a function of action values given as
+
+$$
+\mathbf{\hat{p}} = \nabla f(\mathbf{\hat{q}})
+$$
+
+\noindent
+where $\mathbf{\hat{q}}$ is a vector of values produced from some value function approximator (i.e., a neural network) parameterized by a weight vector $\pmb{\theta}$ so that $\nabla f(\mathbf{\hat{q}}) = \nabla f(\mathbf{\hat{q}(\pmb{\theta})})$. Selecting actions by $\epsilon$-greedy, we can say that
+
+$$
+\mathbf{\hat{p}} = (1 - \lambda\epsilon)\cdot\indmax (\mathbf{\hat{q}}) + \epsilon\mathbf{1}
+$$
+
+\noindent
+Taking an action $a$ we observe a reward $q_a$. What are the possible loss functions that we can use?
+
+\begin{equation*}
+\begin{aligned}
+L(\hat{q}_a,q_a) & = \sum_a\frac{1}{\lvert A \rvert}(\hat{q}_a - q_a) \quad \text{[Expected Square Loss]} \\
+& = \sum_a\hat{p}_a(\hat{q}_a - q_a) \quad \text{[]} \\
+& = \sum_a p_a(\hat{q}_a - q_a) \quad \text{[Importance Sampling Weighted Expected Square Lossx]} \\
+& = \sum_a \hat{p}_a q_a + \nabla f^*(\hat{p}_a) \quad \text{[Policy Gradient with Regularized Entropy]}
+\end{aligned}
+\end{equation*}
 
 \end{document}
