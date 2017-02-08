@@ -3,6 +3,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{graphicx}
 \usepackage[left=1.25in,right=1.25in]{geometry}
 
 \renewcommand{\baselinestretch}{1.5}
@@ -245,5 +246,16 @@ L(\hat{q}_a,q_a) & = \sum_a\frac{1}{\lvert A \rvert}(\hat{q}_a - q_a) \quad \tex
 & = \sum_a \hat{p}_a q_a + \nabla f^*(\hat{p}_a) \quad \text{[Policy Gradient with Regularized Entropy]}
 \end{aligned}
 \end{equation*}
+
+\section*{Feedforward Neural Networks}
+
+\subsection*{Calculus Chain Rule}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=1]{nn_chain}
+\caption{Single-layer neural network}
+\label{fig:sl_nn}
+\end{figure}
 
 \end{document}

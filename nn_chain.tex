@@ -1,0 +1,59 @@
+% MergeSort-RecursionTree
+% Manuel Kirsch
+\documentclass{standalone}
+\usepackage{fancybox}
+\usepackage[dvipsname]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+
+
+\title{HOO}
+\author{Z. F. Ahmad}
+\date{}
+\begin{document}
+
+\centering
+\begin{tikzpicture}[]
+
+\node (x0) [circle,draw] at (0,0) {$x_0$};
+\node (x1) [circle,draw] at (1,0) {$x_1$};
+\node (x2) [] at (2,0) {$\hdots$};
+\node (x3) [circle,draw] at (3,0) {$x_i$};
+\node (x) [] at (4,0) {$\leftarrow\mathbf{x}$};
+
+\node (h0) [circle,draw] at (0,2) {$h_0$};
+\node (h1) [circle,draw] at (1,2) {$h_1$};
+\node (h2) [] at (2,2) {$\hdots$};
+\node (h3) [circle,draw] at (3,2) {$h_j$};
+\node (h) [] at (4,2) {$\leftarrow\mathbf{h}$};
+
+\node (g0) [circle,draw] at (1.5,4) {$g$};
+%\node (g1) [circle,draw] at (1,4) {$g_1$};
+%\node (g2) [] at (2,4) {$\hdots$};
+%\node (g3) [circle,draw] at (3,4) {$g_k$};
+\node (g) [] at (4,4) {$\leftarrow\mathbf{g}$};
+
+\draw [] (x0) -- (h0);
+\draw [] (x0) -- (h1);
+\draw [] (x0) -- (h3);
+\draw [] (x1) -- (h0);
+\draw [] (x1) -- (h1);
+\draw [] (x1) -- (h3);
+\draw [] (x3) -- (h0);
+\draw [] (x3) -- (h1);
+\draw [] (x3) -- (h3);
+
+\draw [] (h0) -- (g0);
+%\draw [] (h0) -- (g1);
+%\draw [] (h0) -- (g3);
+\draw [] (h1) -- (g0);
+%\draw [] (h1) -- (g1);
+%\draw [] (h1) -- (g3);
+\draw [] (h3) -- (g0);
+%\draw [] (h3) -- (g1);
+%\draw [] (h3) -- (g3);
+
+\end{tikzpicture}
+
+\end{document}
