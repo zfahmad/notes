@@ -251,11 +251,23 @@ L(\hat{q}_a,q_a) & = \sum_a\frac{1}{\lvert A \rvert}(\hat{q}_a - q_a) \quad \tex
 
 \subsection*{Calculus Chain Rule}
 
-\begin{figure}[h!]
+Figure~\ref{fig:sl_nn} depicts a single-layer neural network that takes an input vector $\mathbf{x}$ where $\lvert \mathbf{x} \rvert = n$ and produces a scalar output $f(\mathbf{x})$. The layer $\mathbf{h}$ produces a set of output values that is given by $h(\mathbf{x})$. The network output is calculated by $g(h(\mathbf{x}))$. The gradient of the function can be calculated using the chain rule as follows:
+
+\begin{figure}[t]
 \centering
 \includegraphics[scale=1]{nn_chain}
 \caption{Single-layer neural network}
 \label{fig:sl_nn}
 \end{figure}
+
+\begin{equation*}
+\begin{aligned}
+f(\mathbf{x}) & = g(h(\mathbf{x})) \\
+\frac{df}{dx_j} & = \sum\limits_i \frac{dg}{dh_i} \cdot \frac{dh_i}{dx_j}, \quad \forall j = 0, 1, \hdots n\\
+\therefore \left[\frac{df}{d\mathbf{x}}\right]_{n\times 1} & = \left[\frac{d\mathbf{h}}{d\mathbf{x}}\right]_{n\times m} \cdot \left[\frac{dg}{d\mathbf{h}}\right]_{m\times 1}
+\end{aligned}
+\end{equation*}
+
+\subsection*{Backpropagation}
 
 \end{document}
