@@ -5,12 +5,21 @@
 \usepackage{amsthm}
 \usepackage{graphicx}
 \usepackage[left=1.25in,right=1.25in]{geometry}
+\usepackage{fancyhdr}
 
 \renewcommand{\baselinestretch}{1.5}
 \newcommand{\indmax}{\operatorname{ind\,max}}
 
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}
+
+\pagestyle{fancy}
+\lhead{CMPUT 656}
+\rhead{Notes}
+
+\title{CMPUT 656 Notes}
+\author{Z. F. Ahmad}
+\date{}
 
 \begin{document}
 
@@ -242,7 +251,7 @@ Taking an action $a$ we observe a reward $q_a$. What are the possible loss funct
 \begin{aligned}
 L(\hat{q}_a,q_a) & = \sum_a\frac{1}{\lvert A \rvert}(\hat{q}_a - q_a) \quad \text{[Expected Square Loss]} \\
 & = \sum_a\hat{p}_a(\hat{q}_a - q_a) \quad \text{[]} \\
-& = \sum_a p_a(\hat{q}_a - q_a) \quad \text{[Importance Sampling Weighted Expected Square Lossx]} \\
+& = \sum_a p_a(\hat{q}_a - q_a) \quad \text{[Importance Sampling Weighted Expected Square Loss]} \\
 & = \sum_a \hat{p}_a q_a + \nabla f^*(\hat{p}_a) \quad \text{[Policy Gradient with Regularized Entropy]}
 \end{aligned}
 \end{equation*}
@@ -269,5 +278,56 @@ f(\mathbf{x}) & = g(h(\mathbf{x})) \\
 \end{equation*}
 
 \subsection*{Backpropagation}
+
+Let us assume we have a neural network with $L$ hidden layers. The input vector $\mathbf{x}$ is transformed by a weight matrix $\mathbf{W}^{(1)}$ to produce a layer represented as the vector $\mathbf{z}^{(1)}$. In turn, $\mathbf{z}^{(1)}$ is transformed by a function $\phi(\mathbf{z}^{(1)})$ to produce a vector $\mathbf{y}^{(1)}$. Notating the input vector as $\mathbf{x} = \mathbf{y}^{(0)}$, we can generalize over numerous layers to get a sequence of transformations such that
+
+$$
+\mathbf{y}^{(0)} \xrightarrow{\mathbf{W}^{(1)}} \mathbf{z}^{(1)} \xrightarrow{\phi(\mathbf{z}^{(1)})} \mathbf{y}^{(1)} \xrightarrow{\mathbf{W}^{(2)}} \mathbf{z}^{(2)} \rightarrow \hdots \rightarrow \mathbf{z}^{(L)} \xrightarrow{\phi(\mathbf{z}^{(L)})} \mathbf{y}^{(L)}
+$$
+
+\noindent
+where at any layer $l$ we have
+
+$$
+\mathbf{z}^{(l)} = \mathbf{W}^{(l)} \cdot \mathbf{y}^{(l-1)}
+$$
+$$
+\mathbf{y}^{(l)} = \phi(\mathbf{z}^{(l)}).
+$$
+
+\noindent
+It is important to note that each layer is appended with a bias term.
+
+The neural network is trained on a number of the samples and the output of the network is evaluated against the true output value $\mathbf{y}^*$ of the training data using a Bregman loss function\footnote{Even though the output is in $\mathbf{y}$, the problem is a convex training in $\mathbf{z}$.}:
+
+\begin{equation*}
+\begin{aligned}
+\text{Loss}(\mathbf{y}^*, \mathbf{y}^{(L)}) = \mathcal{L} & \overset{\Delta}{=} D_{f^*}(\mathbf{y}^*, \mathbf{y}^{(L)}) \\
+& = D_{f}(\mathbf{z}^{(L)}, \nabla f^*(\mathbf{y}^*)) \\
+& = f(\mathbf{z}^{(L)}) - \langle \mathbf{z}^{(L)},\mathbf{y}^* \rangle + f^*(\mathbf{y}^*)
+\end{aligned}
+\end{equation*}
+
+\noindent
+The gradient of the loss function with respect to $\mathbf{z}^{(L)}$ is given by
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathcal{L}}{d\mathbf{z}^{(L)}} & = \frac{d}{d\mathbf{z}^{(L)}}\left(f(\mathbf{z}^{(L)}) - \langle \mathbf{z}^{(L)},\mathbf{y}^* \rangle + f^*(\mathbf{y}^*) \right) \\
+& = \nabla f(\mathbf{z}^{(L)}) - \mathbf{y}^* \\
+& = \mathbf{y}^{(L)} - \mathbf{y}^* = \pmb{\delta}^{(L)}
+\end{aligned}
+\end{equation*}
+
+\noindent
+and the gradient of the loss function with respect to the final weight matrix is
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathcal{L}}{d\mathbf{W}^{(L)}_{k:}} & = \frac{d\mathcal{L}}{dz^{(L)}_{k}} \cdot \frac{dz^{(L)}_{k}}{d\mathbf{W}^{(L)}_{k:}} \\
+& = \delta^{(L)}_{k}\mathbf{y}^{(L-1)\top} \\
+\therefore \frac{d\mathcal{L}}{d\mathbf{W}^{(L)}} & = \pmb{\delta}^{(L)}\mathbf{y}^{(L-1)\top}
+\end{aligned}
+\end{equation*}
 
 \end{document}
