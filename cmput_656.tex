@@ -330,4 +330,55 @@ and the gradient of the loss function with respect to the final weight matrix is
 \end{aligned}
 \end{equation*}
 
+\noindent
+and finally the gradient of the loss with respect to the output vector $\mathbf{y}^{(L-1)}$ is
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathcal{L}}{d\mathbf{y}^{(L-1)}} & = \sum\limits_k \frac{d\mathcal{L}}{dz^{(L)}_{k}} \cdot \frac{dz^{(L)}_{k}}{d\mathbf{y}^{(L-1)}} \\
+& = \sum\limits_k \delta_k^{(L)} \mathbf{W}^{(L)\top}_{k:} \\
+\therefore \frac{d\mathcal{L}}{d\mathbf{y}^{(L-1)}} & = \mathbf{W}^{(L)\top} \pmb{\delta}^{(L)}.
+\end{aligned}
+\end{equation*}
+
+\noindent
+Continuing on to the penultimate layer of the neural network $L-1$, we can derive the gradient of the loss with respect to the structures in the that layer. The gradient of the loss with respect to $\mathbf{z}^{(L-1)}$ is found by
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathcal{L}}{dz_k^{(L-1)}} & = \frac{d\mathcal{L}}{dy^{(L-1)}} \cdot \phi'(z_k^{(L-1)}) \\
+\frac{d\mathcal{L}}{d\mathbf{z}^{(L-1)}} & = \frac{d\mathcal{L}}{d\mathbf{y}^{(L-1)}} \cdot \phi'(\mathbf{z}^{(L-1)}) = \pmb{\delta}^{(L-1)}
+\end{aligned}
+\end{equation*}
+
+\noindent
+and subsequently
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathcal{L}}{d\mathbf{W}^{(L-1)}_{k:}} & = \frac{d\mathcal{L}}{dz^{(L-1)}_{k}} \cdot \frac{dz^{(L-1)}_{k}}{d\mathbf{W}^{(L-1)}_{k:}} \\
+& = \delta^{(L-1)}_{k}\mathbf{y}^{(L-2)\top} \\
+\therefore \frac{d\mathcal{L}}{d\mathbf{W}^{(L-1)}} & = \pmb{\delta}^{(L-1)}\mathbf{y}^{(L-2)\top}
+\end{aligned}
+\end{equation*}
+
+\begin{equation*}
+\frac{d\mathcal{L}}{d\mathbf{y}^{(L-2)}} = \mathbf{W}^{(L-1)\top} \pmb{\delta}^{(L-1)}.
+\end{equation*}
+
+\noindent
+So we can write, at any layer $l$, assuming we have $\frac{d\mathcal{L}}{d\mathbf{y}^{(l)}}$
+
+\begin{equation*}
+\frac{d\mathcal{L}}{d\mathbf{z}^{(l)}} = \frac{d\mathcal{L}}{d\mathbf{y}^{(l)}} \cdot \phi'(\mathbf{z}^{(l)}) \overset{\Delta}{=} \pmb{\delta}^{(l)}
+\end{equation*}
+
+\begin{equation*}
+\frac{d\mathcal{L}}{d\mathbf{W}^{(l)}} = \pmb{\delta}^{(l)}\mathbf{y}^{(l-1)\top}
+\end{equation*}
+
+\begin{equation*}
+\frac{d\mathcal{L}}{d\mathbf{z}^{(l)}} = \mathbf{W}^{(l)\top} \pmb{\delta}^{(l)}
+\end{equation*}
+
 \end{document}
