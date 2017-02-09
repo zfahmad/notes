@@ -156,8 +156,8 @@ Combining both equations, we get the matrix equation
 
 \begin{equation*}
 \begin{aligned}
-\frac{d\mathbf{p}}{d\mathbf{q}} & = \Delta(\nabla f(\mathbf{q})) - \nabla f(\mathbf{q})\nabla f(\mathbf{q})^\top, \\
-& = \Delta(\mathbf{p}) - \mathbf{p}\mathbf{p}^\top
+\frac{d\mathbf{p}}{d\mathbf{q}} & = \triangle(\nabla f(\mathbf{q})) - \nabla f(\mathbf{q})\nabla f(\mathbf{q})^\top, \\
+& = \triangle(\mathbf{p}) - \mathbf{p}\mathbf{p}^\top
 \end{aligned}
 \end{equation*}
 
@@ -184,16 +184,16 @@ where $\mathbf{q}$ is a vector of values produced from some value function appro
 \begin{equation*}
 \begin{aligned}
 \frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot \frac{d\mathbf{p}}{d\mathbf{q}} \cdot \frac{dV}{d\mathbf{p}} \\
-& = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot (\Delta(\mathbf{p}) - \mathbf{p}\mathbf{p}^\top) \cdot \mathbf{r}
+& = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot (\triangle(\mathbf{p}) - \mathbf{p}\mathbf{p}^\top) \cdot \mathbf{r}
 \end{aligned}
 \end{equation*}
 
 \noindent
-Depending on the direction in which we pull out $\Delta(\mathbf{p}$ from the middle term, we can derive two resultant forms. The first form, called ``Bregman'', being
+Depending on the direction in which we pull out $\triangle(\mathbf{p}$ from the middle term, we can derive two resultant forms. The first form, called ``Bregman'', being
 
 \begin{equation*}
 \begin{aligned}
-\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot \Delta(\mathbf{p}) (I - \mathbf{1}\mathbf{p}^\top) \cdot \mathbf{r} \\
+\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot \triangle(\mathbf{p}) (I - \mathbf{1}\mathbf{p}^\top) \cdot \mathbf{r} \\
 & = \sum_a p_a \left[\frac{d\mathbf{q}}{d\pmb{\theta}}\right]_{:a}(r_a - \mathbf{p}^\top \mathbf{r})
 \end{aligned}
 \end{equation*}
@@ -203,7 +203,7 @@ The second form is called ``Williams'' and is of the form
 
 \begin{equation*}
 \begin{aligned}
-\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot (I - \mathbf{1}\mathbf{p}^\top) \Delta(\mathbf{p}) \cdot \mathbf{r} \\
+\frac{dV}{d\pmb{\theta}} & = \frac{d\mathbf{q}}{d\pmb{\theta}} \cdot (I - \mathbf{1}\mathbf{p}^\top) \triangle(\mathbf{p}) \cdot \mathbf{r} \\
 & = \sum_a p_a \left[\frac{d\mathbf{q}}{d\pmb{\theta}}(I - \mathbf{p}\mathbf{1}^\top)\right]_{:a}r_a
 \end{aligned}
 \end{equation*}
@@ -379,6 +379,59 @@ So we can write, at any layer $l$, assuming we have $\frac{d\mathcal{L}}{d\mathb
 
 \begin{equation*}
 \frac{d\mathcal{L}}{d\mathbf{z}^{(l)}} = \mathbf{W}^{(l)\top} \pmb{\delta}^{(l)}
+\end{equation*}
+
+\subsection*{Transfer Functions, $\phi$}
+
+$$
+\phi(\mathbf{z}) = \sigma(\mathbf{z}) = \frac{1}{1 + e^{\mathbf{z}}}, \quad [\text{Sigmoid}]
+$$
+$$
+\phi(\mathbf{z}) = \tanh(\mathbf{z}) = \frac{e^{\mathbf{z}} - e^{-\mathbf{z}}}{e^{\mathbf{z}} + e^{-\mathbf{z}}}, \quad [\text{tanh}]
+$$
+$$
+\phi(\mathbf{z}) = \lvert\mathbf{z}\rvert, \quad [\text{Absolute}]
+$$
+$$
+\phi(\mathbf{z}) = \mathbf{z}_{+} = \max(0,\mathbf{z}), \quad [\text{Relu}]
+$$
+$$
+\phi(\mathbf{z}) = f_{\tau} = \tau\log(e^{\mathbf{z}/\tau} + 1), \quad [\text{KL-Divergence}]
+$$
+
+\subsubsection*{Relu Gate}
+
+It is positive homogeneous and so
+
+$$
+\phi(a\mathbf{z}) = a\phi(\mathbf{z}), \quad \forall a \geq 0
+$$
+$$
+\phi(\mathbf{z}) = \mathbf{z}\cdot\phi'(\mathbf{z})
+$$
+$$
+\phi(\mathbf{z}) = \mathbf{z}\cdot\mathbb{I}(\mathbf{z}\geq0)
+$$
+
+\noindent
+The gradients for the NN can then be calculated as
+
+\begin{equation*}
+\begin{aligned}
+\frac{d\mathcal{L}}{d\mathbf{z}^{(l)}} & = \frac{d\mathcal{L}}{d\mathbf{y}^{(l)}}\circ\phi'(\mathbf{z}^{(l)}) \\
+& = \triangle(\mathbb{I}(\mathbf{z}\geq0))\cdot\frac{d\mathcal{L}}{d\mathbf{y}^{(l)}}
+\end{aligned}
+\end{equation*}
+
+\noindent
+where $\circ$ is the component-wise product (Hadamard product) and
+
+\begin{equation*}
+\frac{d\mathcal{L}}{d\mathbf{W}^{(l)}} = \pmb{\delta}^{(L\rightarrow l)}\mathbf{y}^{(l-1)\top}
+\end{equation*}
+
+\begin{equation*}
+\pmb{\delta}^{(L\rightarrow l)} = \triangle(\mathbf{y}^{(l)})\mathbf{W}^{(l+1)\top}\triangle(\mathbf{y}^{(l+1)})\mathbf{W}^{(l+2)\top}\hdots\mathbf{W}^{(L-1)\top}\triangle(\mathbf{y}^{(L-1)})\pmb{\delta}^{(L)}
 \end{equation*}
 
 \end{document}
