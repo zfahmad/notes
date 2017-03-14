@@ -9,6 +9,7 @@
 
 \renewcommand{\baselinestretch}{1.5}
 \newcommand{\indmax}{\operatorname{ind\,max}}
+\newcommand{\argmax}{\operatorname{arg\,max}}
 
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}
@@ -433,5 +434,34 @@ where $\circ$ is the component-wise product (Hadamard product) and
 \begin{equation*}
 \pmb{\delta}^{(L\rightarrow l)} = \triangle(\mathbf{y}^{(l)})\mathbf{W}^{(l+1)\top}\triangle(\mathbf{y}^{(l+1)})\mathbf{W}^{(l+2)\top}\hdots\mathbf{W}^{(L-1)\top}\triangle(\mathbf{y}^{(L-1)})\pmb{\delta}^{(L)}
 \end{equation*}
+
+\section*{One-shot Bandits}
+
+Given
+
+\begin{itemize}
+\item reward vector $\langle r_i, \hdots, r_n \rangle$
+\item policy vector $\langle \hat{p}, \hdots, \hat{p} \rangle$
+\item value vector $\langle \hat{q}, \hdots, \hat{q} \rangle$
+\end{itemize}
+
+The greedy policy $\rightarrow p^* = \indmax(r)$
+
+Optimal regularized policy 
+\begin{equation*}
+\begin{aligned}
+\mathbf{p} & = \nabla f_{\tau}(\textbf{q}) = \nabla f_{\tau}(\mathbf{r}) \\
+& = \argmax\limits_{\mathbf{p} \in \mathcal{F}^*} \mathbf{r}\cdot \mathbf{p} - F^*_{\tau}(\mathbf{p}) \\
+\therefore V_{\text{max}} & = \mathbf{p}\cdot \textbf{r} - F^*_{\tau}(\mathbf{p}) = F_{\tau}(\mathbf{r})
+\end{aligned}
+\end{equation*}
+
+\subsubsection*{Loop}
+\begin{enumerate}
+\item Select $a_i \sim \mathbf{\hat{p}}$
+\item Sample $r_{a_i}$
+\item Update $\mathbf{\hat{q}}$
+\item Update $\mathbf{\hat{p}}$
+\end{enumerate}
 
 \end{document}
