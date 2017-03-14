@@ -10,6 +10,7 @@
 \renewcommand{\baselinestretch}{1.5}
 \newcommand{\indmax}{\operatorname{ind\,max}}
 \newcommand{\argmax}{\operatorname{arg\,max}}
+\newcommand{\argmin}{\operatorname{arg\,min}}
 
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}
@@ -451,8 +452,8 @@ Optimal regularized policy
 \begin{equation*}
 \begin{aligned}
 \mathbf{p} & = \nabla f_{\tau}(\textbf{q}) = \nabla f_{\tau}(\mathbf{r}) \\
-& = \argmax\limits_{\mathbf{p} \in \mathcal{F}^*} \mathbf{r}\cdot \mathbf{p} - F^*_{\tau}(\mathbf{p}) \\
-\therefore V_{\text{max}} & = \mathbf{p}\cdot \textbf{r} - F^*_{\tau}(\mathbf{p}) = F_{\tau}(\mathbf{r})
+& = \argmax\limits_{\mathbf{p} \in \mathcal{f}^*} \mathbf{r}\cdot \mathbf{p} - f^*_{\tau}(\mathbf{p}) \\
+\therefore V_{\text{max}} & = \mathbf{p}\cdot \mathbf{r} - f^*_{\tau}(\mathbf{p}) = f_{\tau}(\mathbf{r})
 \end{aligned}
 \end{equation*}
 
@@ -463,5 +464,36 @@ Optimal regularized policy
 \item Update $\mathbf{\hat{q}}$
 \item Update $\mathbf{\hat{p}}$
 \end{enumerate}
+
+\subsection*{Strategy: Follow the regularized leader}
+
+At any time $t$,
+
+\begin{equation*}
+\begin{aligned}
+\mathbf{p}_{t+1} & = \argmin\limits_{\mathbf{p} \in \mathcal{F}^*} - \sum\limits^t_{i=1} \mathbf{r}_i \cdot \mathbf{p} + f^*_{\tau}(\mathbf{p}) \\
+& = \argmax\limits_{\mathbf{p} \in \mathcal{F}^*} \sum\limits^t_{i=1} \mathbf{r}_i \cdot \mathbf{p} - f^*_{\tau}(\mathbf{p}) \\
+& = \nabla f_{\tau}(\mathbf{r}_{i:t}), \quad \mathbf{r}_{i:t} = \sum\limits^t_{i=1} \mathbf{r}_i
+\end{aligned}
+\end{equation*}
+
+\subsubsection*{Theorem}
+
+Consider any fixed strategy $\mathbf{u}$, then the \emph{regret} of this strategy is $R_t(\mathbf{u}) = \sum\limits^t_i \mathbf{r}_i \mathbf{u} - \mathbf{r}_i \mathbf{p}_i$. So we can have
+
+\begin{equation*}
+R_t(\mathbf{u}) \leq \tau(f^*(\mathbf{u}) - f^*(\mathbf{p})) + \frac{1}{\tau} \sum\limits^t_i \lVert\mathbf{r}_i \rVert^2_\infty, \quad \forall \mathbf{u}
+\end{equation*}
+
+\noindent
+and therefore,
+
+\begin{equation*}
+\begin{aligned}
+\tau & = \sqrt{\frac{\sum_i^t\lVert\mathbf{r}_i \rVert^2_\infty}{f^*(\mathbf{u}) - f^*(\mathbf{p})}} \\
+& \leq 2\sqrt{f^*(\mathbf{u}) - f^*(\mathbf{p})}\sqrt{\mathbf{q}^t_{i=1} \lVert\mathbf{r}_i \rVert^2_\infty} \\
+& \leq 2\sqrt{\log(n)}
+\end{aligned}
+\end{equation*}
 
 \end{document}
